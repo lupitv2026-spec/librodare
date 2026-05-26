@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LibroDare — Importa Foglio</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a26;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --text:#f0eee8;--text2:#9896a4;--text3:#5c5a6a;
+  --gold:#e8c547;--gold-dim:rgba(232,197,71,0.12);--gold-glow:rgba(232,197,71,0.25);
+  --red:#f06449;--red-dim:rgba(240,100,73,0.12);
+  --green:#4ecb8d;--green-dim:rgba(78,203,141,0.12);
+  --r:14px;--rs:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;padding:20px 16px 60px;}
+.wrap{max-width:700px;margin:0 auto;}
+.header{display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:22px;}
+.logo-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--gold),#f0a832);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.header h1{font-family:'Playfair Display',serif;font-size:1.2rem;}
+.header span{font-size:.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;display:block;}
+.card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border2);padding:20px;margin-bottom:14px;}
+.card h2{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:6px;}
+.card p{font-size:.83rem;color:var(--text2);margin-bottom:14px;line-height:1.6;}
+.fg{margin-bottom:12px;}
+.fg label{display:block;font-size:.7rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;}
+.fg input,.fg textarea{width:100%;padding:10px 13px;border:1px solid var(--border2);border-radius:var(--rs);font-family:'Inter',sans-serif;font-size:.88rem;background:var(--surface2);color:var(--text);outline:none;transition:border-color .15s;}
+.fg input:focus,.fg textarea:focus{border-color:rgba(232,197,71,0.4);}
+.fg textarea{resize:vertical;min-height:180px;font-family:monospace;font-size:.8rem;line-height:1.6;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:var(--rs);border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:.86rem;font-weight:600;transition:all .15s;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#f0a832);color:#0a0a0f;}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 4px 18px var(--gold-glow);}
+.btn-out{background:transparent;border:1px solid var(--border2);color:var(--text2);}
+.btn-out:hover{background:var(--surface2);}
+.btn-sm{padding:7px 13px;font-size:.79rem;border-radius:8px;}
+.istruzioni{background:var(--surface2);border-radius:var(--rs);padding:14px;margin-bottom:14px;border:1px solid var(--border);}
+.istruzioni h4{font-size:.82rem;font-weight:600;color:var(--gold);margin-bottom:8px;}
+.istruzioni ol{padding-left:16px;font-size:.8rem;color:var(--text2);line-height:2;}
+.istruzioni strong{color:var(--text);}
+.preview-table{width:100%;border-collapse:collapse;font-size:.78rem;margin-top:10px;}
+.preview-table th{text-align:left;padding:6px 9px;color:var(--text3);font-weight:600;font-size:.68rem;text-transform:uppercase;border-bottom:1px solid var(--border2);}
+.preview-table td{padding:7px 9px;border-bottom:1px solid var(--border);}
+.preview-table tr:last-child td{border-bottom:none;}
+.tag{display:inline-block;padding:1px 6px;border-radius:4px;font-size:.63rem;font-weight:600;text-transform:uppercase;}
+.tD{background:var(--red-dim);color:var(--red);}
+.tA{background:var(--green-dim);color:var(--green);}
+.rbox{background:var(--surface2);border-radius:var(--rs);padding:13px;margin-top:12px;border:1px solid var(--border);}
+.rrow{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:.83rem;}
+.rrow:last-child{border-bottom:none;}
+.success{text-align:center;padding:28px 16px;}
+.success .ico{font-size:2.8rem;margin-bottom:10px;}
+.success h2{font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:7px;}
+.success p{font-size:.84rem;color:var(--text2);margin-bottom:18px;}
+.err{color:var(--red);font-size:.8rem;margin-top:6px;}
+.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,0.2);border-top-color:#0a0a0f;border-radius:50%;animation:rot .7s linear infinite;display:inline-block;}
+@keyframes rot{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--surface2);color:var(--text);padding:9px 18px;border-radius:28px;font-size:.82rem;font-weight:500;z-index:999;white-space:nowrap;border:1px solid var(--border2);animation:tIn .2s ease,tOut .2s ease 2.3s forwards;}
+@keyframes tIn{from{opacity:0;transform:translateX(-50%) translateY(7px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes tOut{to{opacity:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="logo-mark">📒</div>
+    <div><h1>LibroDare</h1><span>Importa da foglio Excel</span></div>
+  </div>
+  <div id="content"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, get, set } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+const FB_CONFIG = {
+  apiKey: "AIzaSyB5gf1QbAAJk3FJG0rONUHIDQVjEd4HNLM",
+  authDomain: "librodare-3e888.firebaseapp.com",
+  databaseURL: "https://librodare-3e888-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "librodare-3e888",
+  storageBucket: "librodare-3e888.firebasestorage.app",
+  messagingSenderId: "445220851534",
+  appId: "1:445220851534:web:0f2670b019a69735e1d81f"
+};
+const fbApp = initializeApp(FB_CONFIG);
+const db = getDatabase(fbApp);
+window.fbLoad = async () => { try { const s = await get(ref(db,'librodare')); return s.exists()?s.val():null; } catch(e){return null;} };
+window.fbSave = async (data) => { try { await set(ref(db,'librodare'),data); return true; } catch(e){return false;} };
+window.dispatchEvent(new Event('fbReady'));
+</script>
+
+<script>
+let STATE = { step: 0, nome: '', telefono: '', movimenti: [] };
+
+function fmt(n){return'€'+Math.abs(parseFloat(n)||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtD(d){try{return new Date(d).toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'numeric'});}catch{return d||'';}}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function render(){
+  const el = document.getElementById('content');
+  if(STATE.step===0) el.innerHTML = renderStep0();
+  else if(STATE.step===1) el.innerHTML = renderStep1();
+  else if(STATE.step===2) el.innerHTML = renderStep2();
+  else if(STATE.step===3) el.innerHTML = renderStep3();
+}
+
+function renderStep0(){
+  return `
+  <div class="card">
+    <h2>👤 Dati del cliente</h2>
+    <p>Prima di tutto dimmi chi è questo cliente.</p>
+    <div class="fg"><label>Nome e Cognome *</label><input id="nome" type="text" placeholder="Es. Mario Rossi"></div>
+    <div class="fg"><label>Telefono</label><input id="tel" type="tel" placeholder="333 1234567"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:4px">
+      <button class="btn btn-gold" onclick="goStep1()">Avanti →</button>
+    </div>
+  </div>`;
+}
+
+function renderStep1(){
+  return `
+  <div class="card">
+    <h2>📋 Incolla i dati dal foglio</h2>
+    <p>Apri il tuo foglio Excel/Numbers, seleziona tutte le righe (da RIPORTO VECCHIO in poi) e incollale qui sotto.</p>
+    <div class="istruzioni">
+      <h4>Come copiare dal foglio:</h4>
+      <ol>
+        <li>Apri il foglio su iPhone/iPad</li>
+        <li>Tocca la prima cella <strong>PRODOTTO</strong></li>
+        <li>Seleziona fino all'ultima riga</li>
+        <li>Copia (⌘C o tieni premuto → Copia)</li>
+        <li>Incolla qui sotto</li>
+      </ol>
+    </div>
+    <div class="fg">
+      <label>Dati incollati</label>
+      <textarea id="dati" placeholder="Incolla qui i dati dal foglio…&#10;&#10;Es:&#10;RIPORTO VECCHIO	25/07/2023	840	&#10;LIQUID	29/07/2023	45	&#10;SAMSUNG WATCH	15/10/2023		300"></textarea>
+    </div>
+    <div id="err" class="err"></div>
+    <div style="display:flex;justify-content:space-between;margin-top:8px;flex-wrap:wrap;gap:8px">
+      <button class="btn btn-out btn-sm" onclick="STATE.step=0;render()">← Indietro</button>
+      <button class="btn btn-gold" onclick="parsaDati()">Analizza →</button>
+    </div>
+  </div>`;
+}
+
+function renderStep2(){
+  const totD = STATE.movimenti.filter(m=>m.tipo==='D').reduce((s,m)=>s+m.importo,0);
+  const totA = STATE.movimenti.filter(m=>m.tipo==='A').reduce((s,m)=>s+m.importo,0);
+  const saldo = totD - totA;
+  return `
+  <div class="card">
+    <h2>✅ Anteprima movimenti</h2>
+    <p>Controlla che tutto sia corretto. Puoi modificare il testo incollato e rianalizzare se serve.</p>
+    <table class="preview-table">
+      <thead><tr><th>Data</th><th>Descrizione</th><th>Tipo</th><th style="text-align:right">Importo</th></tr></thead>
+      <tbody>
+        ${STATE.movimenti.map(m=>`<tr>
+          <td>${fmtD(m.data)}</td>
+          <td>${esc(m.note)}</td>
+          <td><span class="tag ${m.tipo==='D'?'tD':'tA'}">${m.tipo==='D'?'Dare':'Avere'}</span></td>
+          <td style="text-align:right;font-weight:500;color:${m.tipo==='D'?'var(--red)':'var(--green)'}">${fmt(m.importo)}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    <div class="rbox">
+      <div class="rrow"><span>Totale Dare</span><span style="color:var(--red);font-weight:600">${fmt(totD)}</span></div>
+      <div class="rrow"><span>Totale Avere</span><span style="color:var(--green);font-weight:600">${fmt(totA)}</span></div>
+      <div class="rrow"><span style="font-weight:700">Saldo</span><span style="font-weight:700;color:${saldo>0?'var(--red)':'var(--green)'};font-size:1.05rem">${fmt(Math.abs(saldo))} ${saldo>0?'deve a te':'devi tu'}</span></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:14px;flex-wrap:wrap;gap:8px">
+      <button class="btn btn-out btn-sm" onclick="STATE.step=1;render()">← Modifica</button>
+      <button class="btn btn-gold" onclick="importa()">⚡ Importa su LibroDare</button>
+    </div>
+  </div>`;
+}
+
+function renderStep3(){
+  const totD = STATE.movimenti.filter(m=>m.tipo==='D').reduce((s,m)=>s+m.importo,0);
+  const totA = STATE.movimenti.filter(m=>m.tipo==='A').reduce((s,m)=>s+m.importo,0);
+  const saldo = totD - totA;
+  return `
+  <div class="card">
+    <div class="success">
+      <div class="ico">🎉</div>
+      <h2>Importato!</h2>
+      <p><strong>${esc(STATE.nome)}</strong> è stato aggiunto con <strong>${STATE.movimenti.length} movimenti</strong>.<br>
+      Saldo: <strong style="color:${saldo>0?'var(--red)':'var(--green)'}">${fmt(Math.abs(saldo))}</strong> ${saldo>0?'che ti deve':'che devi'}.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-gold" onclick="window.location.href='https://superb-meringue-ba703e.netlify.app'">Apri LibroDare</button>
+        <button class="btn btn-out" onclick="nuovoCliente()">+ Altro cliente</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function goStep1(){
+  const n = document.getElementById('nome').value.trim();
+  if(!n){showToast('Inserisci il nome!');return;}
+  STATE.nome = n;
+  STATE.telefono = document.getElementById('tel').value.trim();
+  STATE.step = 1; render();
+}
+
+function parsaDati(){
+  const raw = document.getElementById('dati').value.trim();
+  const err = document.getElementById('err');
+  if(!raw){err.textContent='Incolla i dati dal foglio!';return;}
+  
+  const movimenti = [];
+  const righe = raw.split('\n').map(r=>r.trim()).filter(r=>r);
+  
+  for(const riga of righe){
+    // Split per tab (copia da Excel/Numbers) o spazi multipli
+    const cols = riga.split(/\t/).map(c=>c.trim());
+    if(cols.length < 2) continue;
+    
+    const prodotto = cols[0];
+    if(!prodotto || prodotto.toLowerCase()==='prodotto') continue; // skip header
+    
+    // Parse data (formato DD/MM/YYYY o DD/MM/YY)
+    let data = '';
+    const dataRaw = cols[1]||'';
+    const dm = dataRaw.match(/(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})/);
+    if(dm){
+      const y = dm[3].length===2?'20'+dm[3]:dm[3];
+      data = `${y}-${dm[2].padStart(2,'0')}-${dm[1].padStart(2,'0')}`;
+    } else {
+      data = new Date().toISOString().split('T')[0];
+    }
+    
+    // Col 2 = importo (rosso = Dare), Col 3 = acconto (verde = Avere)
+    const impStr = (cols[2]||'').replace(/[€\s,]/g,'').replace(',','.');
+    const accStr = (cols[3]||'').replace(/[€\s,]/g,'').replace(',','.');
+    
+    const imp = parseFloat(impStr);
+    const acc = parseFloat(accStr);
+    
+    if(!isNaN(imp) && imp > 0){
+      movimenti.push({ tipo:'D', importo:imp, note:prodotto, data, id:Date.now().toString()+Math.random() });
+    }
+    if(!isNaN(acc) && acc > 0){
+      movimenti.push({ tipo:'A', importo:acc, note:prodotto, data, id:Date.now().toString()+Math.random() });
+    }
+  }
+  
+  if(movimenti.length===0){
+    err.textContent='Nessun dato riconosciuto. Controlla il formato e riprova.';
+    return;
+  }
+  
+  // Ordina per data
+  movimenti.sort((a,b)=>new Date(a.data)-new Date(b.data));
+  STATE.movimenti = movimenti;
+  STATE.step = 2; render();
+}
+
+async function importa(){
+  showToast('Salvando…');
+  const dbData = await window.fbLoad() || {clients:[],pin:'1234',segnalazioni:[]};
+  if(!dbData.clients) dbData.clients=[];
+  
+  const cliente = {
+    id: Date.now().toString(),
+    name: STATE.nome,
+    phone: STATE.telefono,
+    note: '',
+    createdAt: new Date().toISOString(),
+    movimenti: STATE.movimenti.map((m,i)=>({
+      id: (Date.now()+i).toString(),
+      tipo: m.tipo,
+      importo: m.importo,
+      note: m.note,
+      data: m.data,
+      createdAt: new Date().toISOString()
+    }))
+  };
+  
+  dbData.clients.push(cliente);
+  const ok = await window.fbSave(dbData);
+  if(ok){ STATE.step=3; render(); showToast('✅ Importato!'); }
+  else{ showToast('Errore nel salvataggio'); }
+}
+
+function nuovoCliente(){
+  STATE = { step:0, nome:'', telefono:'', movimenti:[] };
+  render();
+}
+
+function showToast(msg){
+  document.querySelectorAll('.toast').forEach(t=>t.remove());
+  const t=document.createElement('div');t.className='toast';t.textContent=msg;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2600);
+}
+
+window.addEventListener('fbReady', ()=>render());
+setTimeout(()=>render(), 500);
+</script>
+</body>
+</html>
