@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LibroDare — Importa Storico</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a26;--surface3:#22223a;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --text:#f0eee8;--text2:#9896a4;--text3:#5c5a6a;
+  --gold:#e8c547;--gold-dim:rgba(232,197,71,0.12);--gold-glow:rgba(232,197,71,0.25);
+  --red:#f06449;--red-dim:rgba(240,100,73,0.12);
+  --green:#4ecb8d;--green-dim:rgba(78,203,141,0.12);
+  --r:16px;--rs:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;padding:20px 16px 60px;}
+.wrap{max-width:660px;margin:0 auto;}
+.header{display:flex;align-items:center;gap:10px;padding-bottom:18px;border-bottom:1px solid var(--border);margin-bottom:24px;}
+.logo-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--gold),#f0a832);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.header h1{font-family:'Playfair Display',serif;font-size:1.2rem;}
+.header span{font-size:.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;display:block;}
+.progress{display:flex;gap:6px;align-items:center;margin-bottom:24px;}
+.pd{width:26px;height:26px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:600;color:var(--text3);flex-shrink:0;transition:all .2s;}
+.pd.active{border-color:var(--gold);background:var(--gold);color:#0a0a0f;}
+.pd.done{border-color:var(--green);background:var(--green);color:#0a0a0f;}
+.pl{flex:1;height:2px;background:var(--border);border-radius:1px;}
+.pl.done{background:var(--green);}
+.card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border2);padding:22px;margin-bottom:14px;animation:su .22s ease;}
+@keyframes su{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card h2{font-family:'Playfair Display',serif;font-size:1.25rem;margin-bottom:6px;}
+.card .sub{font-size:.83rem;color:var(--text2);margin-bottom:18px;line-height:1.6;}
+.fg{margin-bottom:11px;}
+.fg label{display:block;font-size:.7rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;}
+.fg input,.fg textarea{width:100%;padding:10px 13px;border:1px solid var(--border2);border-radius:var(--rs);font-family:'Inter',sans-serif;font-size:.89rem;background:var(--surface2);color:var(--text);outline:none;transition:border-color .15s;}
+.fg input:focus,.fg textarea:focus{border-color:rgba(232,197,71,0.4);}
+.fg textarea{resize:vertical;min-height:100px;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:var(--rs);border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:.86rem;font-weight:600;transition:all .15s;white-space:nowrap;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#f0a832);color:#0a0a0f;}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 4px 18px var(--gold-glow);}
+.btn-out{background:transparent;border:1px solid var(--border2);color:var(--text2);}
+.btn-out:hover{background:var(--surface2);}
+.btn-green{background:var(--green-dim);color:var(--green);border:1px solid rgba(78,203,141,0.2);}
+.btn-sm{padding:7px 13px;font-size:.79rem;border-radius:8px;}
+.ma{display:flex;gap:8px;margin-top:16px;justify-content:flex-end;flex-wrap:wrap;}
+.example{background:var(--surface2);border-radius:var(--rs);padding:11px 13px;font-size:.78rem;color:var(--text3);font-family:monospace;line-height:1.8;margin-bottom:14px;border:1px solid var(--border);}
+
+/* CHAT */
+.chat-box{background:var(--surface);border-radius:var(--r);border:1px solid var(--border2);overflow:hidden;margin-bottom:14px;}
+.chat-hd{background:var(--surface2);padding:12px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.chat-hd .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.chat-hd span{font-size:.85rem;font-weight:600;}
+.chat-msgs{padding:14px;max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
+.msg{max-width:88%;animation:su .2s ease;}
+.msg-ai{align-self:flex-start;}
+.msg-user{align-self:flex-end;}
+.msg-bubble{padding:10px 13px;border-radius:14px;font-size:.85rem;line-height:1.55;}
+.msg-ai .msg-bubble{background:var(--surface2);border-bottom-left-radius:4px;}
+.msg-user .msg-bubble{background:linear-gradient(135deg,var(--gold),#f0a832);color:#0a0a0f;border-bottom-right-radius:4px;}
+.msg-time{font-size:.67rem;color:var(--text3);margin-top:3px;padding:0 3px;}
+.msg-user .msg-time{text-align:right;}
+.typing{display:flex;gap:4px;padding:10px 13px;}
+.typing span{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:bounce 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.chat-inp{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:9px;align-items:flex-end;}
+.chat-inp textarea{flex:1;border:1px solid var(--border2);border-radius:var(--rs);padding:9px 12px;font-family:'Inter',sans-serif;font-size:.87rem;background:var(--surface2);color:var(--text);outline:none;resize:none;min-height:40px;max-height:100px;}
+.chat-inp textarea:focus{border-color:rgba(232,197,71,0.4);}
+.send-btn{width:40px;height:40px;border-radius:var(--rs);border:none;background:linear-gradient(135deg,var(--gold),#f0a832);color:#0a0a0f;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.send-btn:disabled{background:var(--surface3);color:var(--text3);cursor:not-allowed;}
+
+/* TABELLA */
+.mov-table{width:100%;border-collapse:collapse;font-size:.8rem;margin-top:10px;}
+.mov-table th{text-align:left;padding:6px 9px;color:var(--text3);font-weight:600;font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border2);}
+.mov-table td{padding:7px 9px;border-bottom:1px solid var(--border);}
+.mov-table tr:last-child td{border-bottom:none;}
+.tag{display:inline-block;padding:1px 6px;border-radius:4px;font-size:.63rem;font-weight:600;text-transform:uppercase;}
+.tD{background:var(--red-dim);color:var(--red);}
+.tA{background:var(--green-dim);color:var(--green);}
+.est{font-style:italic;color:var(--text3);font-size:.68rem;}
+
+/* RIEPILOGO */
+.rbox{background:var(--surface2);border-radius:var(--rs);padding:14px;margin-top:12px;border:1px solid var(--border);}
+.rbox h4{font-family:'Playfair Display',serif;font-size:.95rem;margin-bottom:10px;}
+.rrow{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.84rem;}
+.rrow:last-child{border-bottom:none;}
+.rv{font-weight:500;}
+
+/* SUCCESS */
+.success{text-align:center;padding:28px 16px;}
+.success .ico{font-size:2.8rem;margin-bottom:10px;}
+.success h2{font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:7px;}
+.success p{font-size:.85rem;color:var(--text2);margin-bottom:18px;}
+
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--surface2);color:var(--text);padding:9px 18px;border-radius:28px;font-size:.82rem;font-weight:500;z-index:999;white-space:nowrap;border:1px solid var(--border2);animation:tIn .2s ease,tOut .2s ease 2.3s forwards;}
+@keyframes tIn{from{opacity:0;transform:translateX(-50%) translateY(7px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes tOut{to{opacity:0}}
+.spin{width:14px;height:14px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:rot .7s linear infinite;display:inline-block;}
+@keyframes rot{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="logo-mark">📒</div>
+    <div><h1>LibroDare</h1><span>Importa storico cliente</span></div>
+  </div>
+  <div class="progress" id="progressBar"></div>
+  <div id="stepContent"></div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, get, set } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+const FB_CONFIG = {
+  apiKey: "AIzaSyB5gf1QbAAJk3FJG0rONUHIDQVjEd4HNLM",
+  authDomain: "librodare-3e888.firebaseapp.com",
+  databaseURL: "https://librodare-3e888-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "librodare-3e888",
+  storageBucket: "librodare-3e888.firebasestorage.app",
+  messagingSenderId: "445220851534",
+  appId: "1:445220851534:web:0f2670b019a69735e1d81f"
+};
+const fbApp = initializeApp(FB_CONFIG);
+const db = getDatabase(fbApp);
+window.fbLoad = async () => { try { const s = await get(ref(db,'librodare')); return s.exists()?s.val():null; } catch(e){return null;} };
+window.fbSave = async (data) => { try { await set(ref(db,'librodare'),data); return true; } catch(e){return false;} };
+window.dispatchEvent(new Event('fbReady'));
+</script>
+
+<script>
+const STEPS = ['Cliente','Dare','Avere','AI elabora','Risultato'];
+let S = { step:0, cliente:{name:'',phone:'',note:''}, rawDare:'', rawAvere:'', movimenti:[], chatHistory:[], isTyping:false };
+
+function parseRoute(){return {};}
+function nowT(){return new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});}
+function fmt(n){return'€'+Math.abs(parseFloat(n)||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtD(d){try{return new Date(d).toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'numeric'});}catch{return d||'';}}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function today(){return new Date().toISOString().split('T')[0];}
+
+function renderProgress(){
+  const bar=document.getElementById('progressBar');
+  let html='';
+  STEPS.forEach((s,i)=>{
+    const cls=i<S.step?'done':i===S.step?'active':'';
+    html+=`<div class="pd ${cls}">${i<S.step?'✓':i+1}</div>`;
+    if(i<STEPS.length-1) html+=`<div class="pl ${i<S.step?'done':''}"></div>`;
+  });
+  bar.innerHTML=html;
+}
+
+function render(){
+  renderProgress();
+  const el=document.getElementById('stepContent');
+  if(S.step===0) el.innerHTML=renderStep0();
+  else if(S.step===1) el.innerHTML=renderStep1();
+  else if(S.step===2) el.innerHTML=renderStep2();
+  else if(S.step===3) el.innerHTML=renderStep3();
+  else if(S.step===4) el.innerHTML=renderStep4();
+  bindStep();
+}
+
+function renderStep0(){return`
+<div class="card">
+  <h2>👤 Chi è il cliente?</h2>
+  <p class="sub">Iniziamo con i dati del cliente di cui vuoi importare lo storico.</p>
+  <div class="fg"><label>Nome e Cognome *</label><input id="s0-name" type="text" placeholder="Es. Corrado Rossi" value="${esc(S.cliente.name)}"></div>
+  <div class="fg"><label>Telefono</label><input id="s0-phone" type="tel" placeholder="333 1234567" value="${esc(S.cliente.phone)}"></div>
+  <div class="fg"><label>Note</label><input id="s0-note" type="text" placeholder="Facoltativo" value="${esc(S.cliente.note)}"></div>
+  <div class="ma"><button class="btn btn-gold" onclick="nextStep0()">Avanti →</button></div>
+</div>`;}
+
+function renderStep1(){return`
+<div class="card">
+  <h2>💰 Cosa ti deve <em>${esc(S.cliente.name)}</em>?</h2>
+  <p class="sub">Scrivi tutto quello che ti deve — acquisti, prestiti, merce. Una riga per voce, con o senza data.</p>
+  <div class="example">scarpe Nike 120€ marzo 2024<br>borsa 85 euro<br>15/06/2024 giacca 200€<br>prestito 50 euro giugno</div>
+  <div class="fg"><label>Dare (una voce per riga)</label><textarea id="s1-dare" placeholder="Scrivi qui…">${esc(S.rawDare)}</textarea></div>
+  <div class="ma">
+    <button class="btn btn-out" onclick="S.step=0;render()">← Indietro</button>
+    <button class="btn btn-gold" onclick="nextStep1()">Avanti →</button>
+  </div>
+</div>`;}
+
+function renderStep2(){return`
+<div class="card">
+  <h2>✅ Cosa ti ha già dato?</h2>
+  <p class="sub">Scrivi acconti, pagamenti e rimborsi ricevuti. Lascia vuoto se non hai ricevuto niente.</p>
+  <div class="example">acconto 50€ aprile 2024<br>pagato 100 euro a giugno<br>bonifico 75€ settembre</div>
+  <div class="fg"><label>Avere (una voce per riga)</label><textarea id="s2-avere" placeholder="Lascia vuoto se nessun pagamento…">${esc(S.rawAvere)}</textarea></div>
+  <div class="ma">
+    <button class="btn btn-out" onclick="S.step=1;render()">← Indietro</button>
+    <button class="btn btn-gold" onclick="nextStep2()">Elabora con AI →</button>
+  </div>
+</div>`;}
+
+function renderStep3(){
+  const msgs=S.chatHistory.map(m=>`
+  <div class="msg msg-${m.role}">
+    <div class="msg-bubble">${m.html||esc(m.content)}</div>
+    <div class="msg-time">${m.time}</div>
+  </div>`).join('');
+  const typing=S.isTyping?`<div class="msg msg-ai"><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div></div>`:'';
+  return`
+<div class="chat-box">
+  <div class="chat-hd"><div class="dot"></div><span>Assistente LibroDare</span></div>
+  <div class="chat-msgs" id="chatMsgs">${msgs}${typing}</div>
+  <div class="chat-inp">
+    <textarea id="chatInput" placeholder="Correggi qualcosa…" onkeydown="chatKD(event)" rows="1"></textarea>
+    <button class="send-btn" id="sendBtn" onclick="sendChat()" ${S.isTyping?'disabled':''}>➤</button>
+  </div>
+</div>
+${S.movimenti.length>0&&!S.isTyping?`
+<div class="card">
+  <h2>📋 Movimenti elaborati</h2>
+  <p class="sub">Controlla e correggi via chat se serve, poi conferma.</p>
+  ${renderMovTable()}
+  ${renderRiepilogo()}
+  <div class="ma">
+    <button class="btn btn-out" onclick="S.step=2;render()">← Riparti</button>
+    <button class="btn btn-green" onclick="conferma()">✓ Conferma e Importa</button>
+  </div>
+</div>`:''}`;
+}
+
+function renderMovTable(){
+  if(!S.movimenti.length) return '';
+  return`<table class="mov-table">
+  <thead><tr><th>#</th><th>Data</th><th>Descrizione</th><th>Tipo</th><th style="text-align:right">Importo</th></tr></thead>
+  <tbody>
+  ${S.movimenti.map((m,i)=>`<tr>
+    <td style="color:var(--text3)">${i+1}</td>
+    <td>${fmtD(m.data)}${m.stimata?'<br><span class="est">stimata</span>':''}</td>
+    <td>${esc(m.note)}</td>
+    <td><span class="tag ${m.tipo==='D'?'tD':'tA'}">${m.tipo==='D'?'Dare':'Avere'}</span></td>
+    <td style="text-align:right;font-weight:500">${fmt(m.importo)}</td>
+  </tr>`).join('')}
+  </tbody></table>`;}
+
+function renderRiepilogo(){
+  const totD=S.movimenti.filter(m=>m.tipo==='D').reduce((s,m)=>s+m.importo,0);
+  const totA=S.movimenti.filter(m=>m.tipo==='A').reduce((s,m)=>s+m.importo,0);
+  const saldo=totD-totA;
+  return`<div class="rbox"><h4>Riepilogo</h4>
+  <div class="rrow"><span>Totale Dare</span><span class="rv" style="color:var(--red)">${fmt(totD)}</span></div>
+  <div class="rrow"><span>Totale Avere</span><span class="rv" style="color:var(--green)">-${fmt(totA)}</span></div>
+  <div class="rrow"><span style="font-weight:600">Saldo finale</span><span class="rv" style="font-size:1.1rem;color:${saldo>0?'var(--red)':'var(--green)'}">${fmt(saldo)}</span></div>
+  </div>`;}
+
+function renderStep4(){
+  const totD=S.movimenti.filter(m=>m.tipo==='D').reduce((s,m)=>s+m.importo,0);
+  const totA=S.movimenti.filter(m=>m.tipo==='A').reduce((s,m)=>s+m.importo,0);
+  const saldo=totD-totA;
+  return`<div class="card"><div class="success">
+    <div class="ico">🎉</div>
+    <h2>Importato!</h2>
+    <p>La scheda di <strong>${esc(S.cliente.name)}</strong> è stata aggiunta con ${S.movimenti.length} movimenti.<br>
+    Saldo: <strong style="color:${saldo>0?'var(--red)':'var(--green)'}">${fmt(Math.abs(saldo))}</strong> ${saldo>0?'che ti deve':'che devi'}.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-gold" onclick="window.location.href='/'">Apri LibroDare</button>
+      <button class="btn btn-out" onclick="nuovoCliente()">+ Altro cliente</button>
+    </div>
+  </div></div>`;}
+
+// NAVIGATION
+function nextStep0(){
+  const n=document.getElementById('s0-name').value.trim();
+  if(!n){showToast('Inserisci il nome!');return;}
+  S.cliente.name=n;
+  S.cliente.phone=document.getElementById('s0-phone').value.trim();
+  S.cliente.note=document.getElementById('s0-note').value.trim();
+  S.step=1;render();
+}
+function nextStep1(){
+  S.rawDare=document.getElementById('s1-dare').value.trim();
+  if(!S.rawDare){showToast('Inserisci almeno una voce!');return;}
+  S.step=2;render();
+}
+function nextStep2(){
+  S.rawAvere=document.getElementById('s2-avere').value.trim();
+  S.step=3;S.chatHistory=[];S.movimenti=[];render();
+  setTimeout(()=>elabora(),400);
+}
+
+// AI
+async function elabora(){
+  addAIMsg('Sto analizzando i dati di <strong>'+esc(S.cliente.name)+'</strong>… <span class="spin"></span>',true);
+  scrollChat();
+  const oggi=new Date().toISOString().split('T')[0];
+  const prompt=`Sei un assistente contabile italiano. Analizza questi movimenti e restituisci JSON.
+
+CLIENTE: ${S.cliente.name}
+DATA OGGI: ${oggi}
+
+DARE (il cliente deve a me - tipo "D"):
+${S.rawDare}
+
+AVERE (il cliente ha già pagato - tipo "A"):
+${S.rawAvere||'(nessuno)'}
+
+ISTRUZIONI:
+1. Estrai ogni voce come movimento separato
+2. tipo: "D" per dare, "A" per avere
+3. importo: numero
+4. note: descrizione pulita della voce
+5. data: se indicata usala (YYYY-MM-DD), altrimenti stimala distribuendo nel tempo e metti stimata:true
+6. Restituisci SOLO JSON valido, nessun testo extra, nessun backtick
+
+Formato:
+{"movimenti":[{"tipo":"D","importo":120,"note":"Scarpe Nike","data":"2024-03-15","stimata":false}],"riepilogo":{"totale_dare":0,"totale_avere":0,"saldo":0}}`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    const text=data.content.map(b=>b.text||'').join('');
+    const clean=text.replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(clean);
+    S.movimenti=parsed.movimenti||[];
+    S.isTyping=false;
+    const totD=S.movimenti.filter(m=>m.tipo==='D').reduce((s,m)=>s+m.importo,0);
+    const totA=S.movimenti.filter(m=>m.tipo==='A').reduce((s,m)=>s+m.importo,0);
+    const saldo=totD-totA;
+    const stimate=S.movimenti.filter(m=>m.stimata).length;
+    let msg=`Ho elaborato <strong>${S.movimenti.length} movimenti</strong>.<br><br>`;
+    msg+=`💰 Totale Dare: <strong style="color:var(--red)">${fmt(totD)}</strong><br>`;
+    msg+=`✅ Totale Avere: <strong style="color:var(--green)">${fmt(totA)}</strong><br>`;
+    msg+=`⚖️ Saldo: <strong>${fmt(Math.abs(saldo))}</strong> ${saldo>0?'che ti deve':'che devi'}<br>`;
+    if(stimate>0) msg+=`<br><em style="color:var(--text3)">📅 ${stimate} date stimate automaticamente</em><br>`;
+    msg+=`<br>Controlla la tabella. Dimmi se qualcosa è sbagliato!`;
+    updateLastAI(msg);render();scrollChat();
+  }catch(e){
+    S.isTyping=false;
+    updateLastAI('⚠️ Errore. Riprova o semplifica i dati.');
+    render();
+  }
+}
+
+function addAIMsg(html,typing=false){
+  S.isTyping=typing;
+  S.chatHistory.push({role:'ai',html,content:'',time:nowT()});
+  render();scrollChat();
+}
+function updateLastAI(html){
+  const last=[...S.chatHistory].reverse().find(m=>m.role==='ai');
+  if(last){last.html=html;}
+  S.isTyping=false;
+}
+function chatKD(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
+async function sendChat(){
+  const inp=document.getElementById('chatInput');
+  const msg=inp.value.trim();
+  if(!msg||S.isTyping)return;
+  inp.value='';
+  S.chatHistory.push({role:'user',content:msg,html:esc(msg),time:nowT()});
+  addAIMsg('Aggiorno… <span class="spin"></span>',true);
+  const prompt=`Hai elaborato questi movimenti: ${JSON.stringify(S.movimenti)}
+L'utente dice: "${msg}"
+Aggiorna e rispondi SOLO JSON: {"movimenti":[...],"risposta":"cosa hai fatto"}`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    const text=data.content.map(b=>b.text||'').join('');
+    const clean=text.replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(clean);
+    S.movimenti=parsed.movimenti||S.movimenti;
+    updateLastAI(esc(parsed.risposta||'Fatto!'));
+    render();scrollChat();
+  }catch{
+    updateLastAI('Non ho capito, puoi riformulare?');
+    render();scrollChat();
+  }
+}
+function scrollChat(){setTimeout(()=>{const el=document.getElementById('chatMsgs');if(el)el.scrollTop=el.scrollHeight;},100);}
+function bindStep(){
+  const ta=document.getElementById('chatInput');
+  if(ta){ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,100)+'px';});}
+}
+
+// CONFERMA — salva su Firebase
+async function conferma(){
+  showToast('Salvando su Firebase…');
+  const dbData=await window.fbLoad()||{clients:[],pin:'1234',segnalazioni:[]};
+  const cliente={
+    id:Date.now().toString(),
+    name:S.cliente.name,
+    phone:S.cliente.phone,
+    note:S.cliente.note,
+    createdAt:new Date().toISOString(),
+    movimenti:S.movimenti.map((m,i)=>({
+      id:(Date.now()+i).toString(),
+      tipo:m.tipo,
+      importo:m.importo,
+      note:m.note,
+      data:m.data,
+      createdAt:new Date().toISOString()
+    }))
+  };
+  if(!dbData.clients) dbData.clients=[];
+  dbData.clients.push(cliente);
+  const ok=await window.fbSave(dbData);
+  if(ok){S.step=4;render();showToast('✅ Importato!');}
+  else{showToast('Errore nel salvataggio');}
+}
+
+function nuovoCliente(){
+  S={step:0,cliente:{name:'',phone:'',note:''},rawDare:'',rawAvere:'',movimenti:[],chatHistory:[],isTyping:false};
+  render();
+}
+
+function showToast(msg){
+  document.querySelectorAll('.toast').forEach(t=>t.remove());
+  const t=document.createElement('div');t.className='toast';t.textContent=msg;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2600);
+}
+
+window.addEventListener('fbReady',()=>render());
+setTimeout(()=>{if(!document.getElementById('progressBar').innerHTML)render();},800);
+</script>
+</body>
+</html>
