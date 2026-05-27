@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Importa Corrado David</title>
+<style>
+body{font-family:Inter,sans-serif;background:#0a0a0f;color:#f0eee8;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+.card{background:#12121a;border-radius:16px;padding:28px;max-width:400px;width:100%;border:1px solid rgba(255,255,255,0.14);text-align:center;}
+h2{font-family:Georgia,serif;font-size:1.4rem;margin-bottom:8px;}
+p{font-size:.88rem;color:#9896a4;margin-bottom:20px;line-height:1.6;}
+.saldo{font-size:1.6rem;font-weight:700;color:#f06449;margin:12px 0;}
+.btn{background:linear-gradient(135deg,#e8c547,#f0a832);color:#0a0a0f;border:none;padding:14px 28px;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;width:100%;transition:all .15s;}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(232,197,71,0.3);}
+.ok{color:#4ecb8d;font-size:1rem;margin-top:14px;}
+.err{color:#f06449;font-size:.85rem;margin-top:14px;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div style="font-size:2rem;margin-bottom:10px">📒</div>
+  <h2>Importa Corrado David</h2>
+  <p>67 movimenti · dal 25/07/2023 al 23/05/2026</p>
+  <div class="saldo">€573,50 deve a te</div>
+  <p style="font-size:.8rem">Clicca per salvare su Firebase</p>
+  <button class="btn" onclick="importa()">⚡ Importa su LibroDare</button>
+  <div id="msg"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, get, set } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+const FB = {
+  apiKey:"AIzaSyB5gf1QbAAJk3FJG0rONUHIDQVjEd4HNLM",
+  authDomain:"librodare-3e888.firebaseapp.com",
+  databaseURL:"https://librodare-3e888-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"librodare-3e888",
+  storageBucket:"librodare-3e888.firebasestorage.app",
+  messagingSenderId:"445220851534",
+  appId:"1:445220851534:web:0f2670b019a69735e1d81f"
+};
+const app = initializeApp(FB);
+const db = getDatabase(app);
+
+window.importa = async function(){
+  const btn = document.querySelector('.btn');
+  const msg = document.getElementById('msg');
+  btn.textContent = '⏳ Salvando…';
+  btn.disabled = true;
+  try{
+    const snap = await get(ref(db,'librodare'));
+    const dbData = snap.exists() ? snap.val() : {clients:[],pin:'1234',segnalazioni:[]};
+    if(!dbData.clients) dbData.clients=[];
+    const cliente = {"id": "1748300000001", "name": "Corrado David", "phone": "3475136442", "note": "", "createdAt": "2026-05-27T08:03:49.114397", "movimenti": [{"id": "1700000000001", "tipo": "D", "importo": 840.0, "note": "RIPORTO VECCHIO", "data": "2023-07-25", "createdAt": "2026-05-27T08:03:49.110058"}, {"id": "1700000000002", "tipo": "D", "importo": 45.0, "note": "LIQUIDO + RES", "data": "2023-07-29", "createdAt": "2026-05-27T08:03:49.110133"}, {"id": "1700000000003", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2023-08-18", "createdAt": "2026-05-27T08:03:49.110144"}, {"id": "1700000000004", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2023-08-31", "createdAt": "2026-05-27T08:03:49.110150"}, {"id": "1700000000005", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2023-09-13", "createdAt": "2026-05-27T08:03:49.110156"}, {"id": "1700000000006", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2023-09-23", "createdAt": "2026-05-27T08:03:49.110161"}, {"id": "1700000000007", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2023-10-06", "createdAt": "2026-05-27T08:03:49.110166"}, {"id": "1700000000008", "tipo": "A", "importo": 300.0, "note": "SAMSUNG WATCH", "data": "2023-10-15", "createdAt": "2026-05-27T08:03:49.110173"}, {"id": "1700000000009", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2023-10-20", "createdAt": "2026-05-27T08:03:49.110179"}, {"id": "1700000000010", "tipo": "D", "importo": 45.0, "note": "LIQUID + RES", "data": "2023-11-06", "createdAt": "2026-05-27T08:03:49.110184"}, {"id": "1700000000011", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2023-12-04", "createdAt": "2026-05-27T08:03:49.110189"}, {"id": "1700000000012", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2023-12-20", "createdAt": "2026-05-27T08:03:49.110194"}, {"id": "1700000000013", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2024-01-12", "createdAt": "2026-05-27T08:03:49.110199"}, {"id": "1700000000014", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2024-01-25", "createdAt": "2026-05-27T08:03:49.110224"}, {"id": "1700000000015", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2024-02-15", "createdAt": "2026-05-27T08:03:49.110232"}, {"id": "1700000000019", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2024-05-01", "createdAt": "2026-05-27T08:03:49.110255"}, {"id": "1700000000016", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2024-05-07", "createdAt": "2026-05-27T08:03:49.110236"}, {"id": "1700000000017", "tipo": "A", "importo": 600.0, "note": "TV 50 POLLICI", "data": "2024-05-29", "createdAt": "2026-05-27T08:03:49.110243"}, {"id": "1700000000018", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2024-06-22", "createdAt": "2026-05-27T08:03:49.110249"}, {"id": "1700000000020", "tipo": "D", "importo": 44.0, "note": "LIQUID + RES", "data": "2024-07-19", "createdAt": "2026-05-27T08:03:49.110260"}, {"id": "1700000000021", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2024-08-14", "createdAt": "2026-05-27T08:03:49.110264"}, {"id": "1700000000022", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2024-08-30", "createdAt": "2026-05-27T08:03:49.110290"}, {"id": "1700000000023", "tipo": "D", "importo": 45.0, "note": "LIQUIDO + RES", "data": "2024-09-16", "createdAt": "2026-05-27T08:03:49.110297"}, {"id": "1700000000025", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2024-10-23", "createdAt": "2026-05-27T08:03:49.110314"}, {"id": "1700000000026", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2024-11-12", "createdAt": "2026-05-27T08:03:49.110319"}, {"id": "1700000000027", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2024-11-20", "createdAt": "2026-05-27T08:03:49.110325"}, {"id": "1700000000028", "tipo": "D", "importo": 34.0, "note": "LIQUID", "data": "2024-12-23", "createdAt": "2026-05-27T08:03:49.110348"}, {"id": "1700000000030", "tipo": "D", "importo": 34.0, "note": "LIQUID", "data": "2025-01-03", "createdAt": "2026-05-27T08:03:49.110367"}, {"id": "1700000000031", "tipo": "D", "importo": 34.0, "note": "LIQUID", "data": "2025-01-17", "createdAt": "2026-05-27T08:03:49.110374"}, {"id": "1700000000032", "tipo": "A", "importo": 96.0, "note": "ACCONTO CAFFÈ", "data": "2025-01-19", "createdAt": "2026-05-27T08:03:49.110397"}, {"id": "1700000000033", "tipo": "D", "importo": 34.0, "note": "LIQUIDO", "data": "2025-01-29", "createdAt": "2026-05-27T08:03:49.110425"}, {"id": "1700000000034", "tipo": "D", "importo": 34.0, "note": "CORRADO", "data": "2025-02-28", "createdAt": "2026-05-27T08:03:49.110434"}, {"id": "1700000000035", "tipo": "D", "importo": 34.0, "note": "LIQUIDO", "data": "2025-03-13", "createdAt": "2026-05-27T08:03:49.110439"}, {"id": "1700000000036", "tipo": "D", "importo": 34.0, "note": "LIQUIDO", "data": "2025-04-09", "createdAt": "2026-05-27T08:03:49.110444"}, {"id": "1700000000037", "tipo": "D", "importo": 13.0, "note": "POD X3 VAPTIO COSMO", "data": "2025-04-19", "createdAt": "2026-05-27T08:03:49.110449"}, {"id": "1700000000038", "tipo": "D", "importo": 34.0, "note": "LIQUIDO", "data": "2025-04-26", "createdAt": "2026-05-27T08:03:49.110454"}, {"id": "1700000000039", "tipo": "A", "importo": 138.0, "note": "ACCONTO PER CONSOLE DJ HERO", "data": "2025-05-06", "createdAt": "2026-05-27T08:03:49.110491"}, {"id": "1700000000040", "tipo": "A", "importo": 100.0, "note": "ACCONTO NINTENDO", "data": "2025-05-06", "createdAt": "2026-05-27T08:03:49.110500"}, {"id": "1700000000041", "tipo": "D", "importo": 34.0, "note": "LIQUIDO", "data": "2025-05-23", "createdAt": "2026-05-27T08:03:49.110508"}, {"id": "1700000000042", "tipo": "D", "importo": 34.0, "note": "LIQUIDO", "data": "2025-06-04", "createdAt": "2026-05-27T08:03:49.110535"}, {"id": "1700000000043", "tipo": "D", "importo": 34.0, "note": "LIQUIDO", "data": "2025-06-16", "createdAt": "2026-05-27T08:03:49.110551"}, {"id": "1700000000044", "tipo": "D", "importo": 34.0, "note": "LIQUIDO", "data": "2025-06-28", "createdAt": "2026-05-27T08:03:49.110558"}, {"id": "1700000000045", "tipo": "A", "importo": 410.0, "note": "ACCONTO NINTENDO SWITCH", "data": "2025-06-28", "createdAt": "2026-05-27T08:03:49.110565"}, {"id": "1700000000046", "tipo": "D", "importo": 39.0, "note": "SIGARETTA NUOVA GEEKV", "data": "2025-07-04", "createdAt": "2026-05-27T08:03:49.110571"}, {"id": "1700000000047", "tipo": "D", "importo": 34.0, "note": "LIQUIDO", "data": "2025-07-31", "createdAt": "2026-05-27T08:03:49.110576"}, {"id": "1700000000048", "tipo": "D", "importo": 25.0, "note": "LIQUIDO 0 + RES ORIZON", "data": "2025-08-06", "createdAt": "2026-05-27T08:03:49.110581"}, {"id": "1700000000049", "tipo": "D", "importo": 69.0, "note": "LIQUIDO FP + NUOVA ECIG ORIZ", "data": "2025-08-11", "createdAt": "2026-05-27T08:03:49.110585"}, {"id": "1700000000050", "tipo": "D", "importo": 34.0, "note": "LIQUIDO", "data": "2025-08-27", "createdAt": "2026-05-27T08:03:49.110590"}, {"id": "1700000000051", "tipo": "D", "importo": 43.0, "note": "LIQUIDO +RES", "data": "2025-09-23", "createdAt": "2026-05-27T08:03:49.110616"}, {"id": "1700000000053", "tipo": "D", "importo": 34.0, "note": "LIQUIDO", "data": "2025-09-30", "createdAt": "2026-05-27T08:03:49.110651"}, {"id": "1700000000052", "tipo": "A", "importo": 249.0, "note": "ORDINE MEDIQWORLD AIRPOD 3 PRO", "data": "2025-10-01", "createdAt": "2026-05-27T08:03:49.110625"}, {"id": "1700000000024", "tipo": "D", "importo": 30.0, "note": "LIQUID", "data": "2025-10-04", "createdAt": "2026-05-27T08:03:49.110303"}, {"id": "1700000000054", "tipo": "D", "importo": 34.0, "note": "LIQUIDO", "data": "2025-10-21", "createdAt": "2026-05-27T08:03:49.110660"}, {"id": "1700000000055", "tipo": "D", "importo": 34.0, "note": "LIQUIDO", "data": "2025-11-05", "createdAt": "2026-05-27T08:03:49.110665"}, {"id": "1700000000056", "tipo": "D", "importo": 34.0, "note": "LIQUIDO", "data": "2025-11-18", "createdAt": "2026-05-27T08:03:49.110671"}, {"id": "1700000000058", "tipo": "D", "importo": 34.0, "note": "LIQUIDÒ", "data": "2025-11-28", "createdAt": "2026-05-27T08:03:49.110683"}, {"id": "1700000000057", "tipo": "A", "importo": 115.0, "note": "NINTENDO SWITCH GIOCHI", "data": "2025-12-01", "createdAt": "2026-05-27T08:03:49.110677"}, {"id": "1700000000059", "tipo": "D", "importo": 69.0, "note": "ACQUISTO LION + LIQUIDO", "data": "2025-12-13", "createdAt": "2026-05-27T08:03:49.110688"}, {"id": "1700000000060", "tipo": "D", "importo": 44.0, "note": "RESISTENZE + LIQUIDO", "data": "2025-12-23", "createdAt": "2026-05-27T08:03:49.110714"}, {"id": "1700000000029", "tipo": "A", "importo": 100.0, "note": "MACCHINA CAFFE", "data": "2025-12-24", "createdAt": "2026-05-27T08:03:49.110359"}, {"id": "1700000000061", "tipo": "D", "importo": 36.5, "note": "LIQUIDO", "data": "2026-01-08", "createdAt": "2026-05-27T08:03:49.110722"}, {"id": "1700000000062", "tipo": "D", "importo": 47.0, "note": "LIQUIDO + RESISTENZE", "data": "2026-01-19", "createdAt": "2026-05-27T08:03:49.110727"}, {"id": "1700000000063", "tipo": "D", "importo": 37.0, "note": "LIQUIDÒ", "data": "2026-01-28", "createdAt": "2026-05-27T08:03:49.110732"}, {"id": "1700000000064", "tipo": "D", "importo": 37.0, "note": "LIQUIDÒ", "data": "2026-03-17", "createdAt": "2026-05-27T08:03:49.110737"}, {"id": "1700000000065", "tipo": "D", "importo": 37.0, "note": "LIQUIDÒ", "data": "2026-03-28", "createdAt": "2026-05-27T08:03:49.110742"}, {"id": "1700000000066", "tipo": "D", "importo": 39.0, "note": "SIGARETTA ELETTRONICA TOUCH +LIQ + RES", "data": "2026-05-16", "createdAt": "2026-05-27T08:03:49.110747"}, {"id": "1700000000067", "tipo": "A", "importo": 119.0, "note": "AIRPOD 4 APPLE", "data": "2026-05-23", "createdAt": "2026-05-27T08:03:49.110753"}]};
+    // Evita duplicati
+    if(dbData.clients.find(c=>c.name==='Corrado David')){
+      msg.innerHTML='<div class="err">⚠️ Corrado David esiste già!</div>';
+      btn.textContent='⚡ Importa su LibroDare';
+      btn.disabled=false;
+      return;
+    }
+    dbData.clients.push(cliente);
+    await set(ref(db,'librodare'), dbData);
+    msg.innerHTML='<div class="ok">✅ Importato! Apri LibroDare per vedere la scheda.</div>';
+    btn.textContent='✅ Fatto!';
+    setTimeout(()=>window.location.href='https://superb-meringue-ba703e.netlify.app',2000);
+  }catch(e){
+    msg.innerHTML='<div class="err">Errore: '+e.message+'</div>';
+    btn.textContent='⚡ Importa su LibroDare';
+    btn.disabled=false;
+  }
+};
+</script>
+</body>
+</html>
